@@ -1,9 +1,9 @@
 import React from 'react';
-import s from './Tank.modules.scss';
+import s from './Enemy.modules.scss';
 
-const Tank = props => {
+const Enemy = props => {
     const { left, top, vector } = props.position;
-    let rotate;    
+    let rotate;
     switch (vector) {
         case 'left':
             rotate = 'rotate(-90deg)';
@@ -25,8 +25,8 @@ const Tank = props => {
     };
     
     return (
-        <div className={s.Tank} style={position}></div>
+        <div className={s.Enemy} style={position}></div>
     )
 }
 
-export default Tank;
+export default Enemy;

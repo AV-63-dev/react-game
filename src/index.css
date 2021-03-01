@@ -43,9 +43,11 @@ table {
 }
 
 /* game style */
+
 #root {
     position: relative;
     height: 100vh;
     width: 100vw;
+	overflow: hidden;
     background: rgb(151, 192, 18);
 }
