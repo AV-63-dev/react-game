@@ -43,6 +43,10 @@ module.exports = {
                 test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
                 use: ['url-loader'],
             },
+            {
+                test: /\.mp3$/,
+                use: ['file-loader'],
+            }
         ]
     },
     plugins: [
@@ -55,5 +59,5 @@ module.exports = {
     devServer: {
         port: 3000,
     },
-   // devtool: 'source-map',
+    devtool: 'source-map',
 };
