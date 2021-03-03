@@ -1,0 +1,38 @@
+.footer {
+    width: 100vW;
+    height: 10vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    background: #17021b;
+}
+
+.text {
+    display: inline;
+    color: wheat;
+    font-size: 2vw;    
+}
+
+.ikon {
+    height: 100%;
+    width: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+
+    a {
+        
+        border: 5px solid wheat;
+        border-radius: 30%;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 10px;
+
+        img {
+            height: 4vh;            
+        }
+    }
+}

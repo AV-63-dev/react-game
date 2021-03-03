@@ -4,18 +4,44 @@ import { impact, generateId } from './utils';
 import { controlerPositionTank } from './utils';
 import { startPositionShell, controlerPositionShell } from './utils';
 import { startPositionEnemies, controlerPositionEnemies, startPositionShellEnemies } from './utils';
+import { randomGameOver } from './utils';
 
+import './App.scss';
+
+import mp3game from './sound/game.mp3';
 import mp3tank from './sound/tank.mp3';
 import mp3shot from './sound/shot.mp3';
 import mp3deadEnemy from './sound/deadEnemy.mp3';
+import mp3сollision from './sound/сollision.mp3';
+import mp3damageTank from './sound/damageTank.mp3';
+import mp3deadTank from './sound/deadTank.mp3';
+
+import Header from './components/Header/Header';
+import Footer from './components/Footer/Footer';
+import Settings from './components/Settings/Settings';
 
 import Tank from './components/Tank/Tank';
 import Shot from './components/Shot/Shot';
 import Enemy from './components/Enemy/Enemy';
+import GameOver from './components/GameOver/GameOver';
 
 class App extends Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            positionTank: {
+                left: 225,
+                top: 130,
+                vector: 'top',
+                id: generateId(),
+            },
+            shot: [],
+            enemy: [],
+            start: false,
+            pause: false,
+            menuModal: false,
+        };
 
         this.keys = {
             ArrowUp: false,
@@ -25,20 +51,18 @@ class App extends Component {
             Space: false,
         };
 
-        this.state = {
-            positionTank: {
-                left: 200,
-                top: 500,
-                vector: 'top',
-                id: generateId(),
-            },
-            shot: [],
-            enemy: [],
-        };
-
-        this.start = true;
-        this.life = 4;
         this.gameArena;
+
+        this.renderTank = false;
+        this.renderBtnStart = true;
+        this.renderBtnMenu = true;
+        this.renderBtnPause = false;
+
+
+        this.counter = 0;
+        this.life = 4;
+        this.pause = false;
+        this.menuModal = false;
 
         this.speedTank = 3; 
         this.speedTimeShotTank = 300;
@@ -48,19 +72,32 @@ class App extends Component {
         this.maxQuantityEnemy = 3;
 
         this.speedShot = 6;
-        this.timeShotTank = true;
-        this.timeShotEnemy = true;
-        this.timeEnemy = false;        
-        this.speedTimeEnemy = 3000;
+        // this.timeShotTank = true;
+        // this.timeShotEnemy = true;
+        // this.timeEnemy = false;        
+        // this.speedTimeEnemy = 3000;
         this.changeSpeedTimeEnemy = 100;
+
+
+        // this.counter = 0;
+        // this.life = 4;
+        // this.timeShotTank = true;
+        // this.timeShotEnemy = true;
+        // this.timeEnemy = false;
+        // this.speedTimeEnemy = 3000;
 
         this.startRun = this.startRun.bind(this);
         this.stopRun = this.stopRun.bind(this);
+        this.playGame = this.playGame.bind(this);
         this.startGame = this.startGame.bind(this);
 
+        this.soundGame = new Audio(mp3game);
         this.soundTank = new Audio(mp3tank);
         this.soundShot = new Audio(mp3shot);
         this.soundDeadEnemy = new Audio(mp3deadEnemy);
+        this.soundСollision = new Audio(mp3сollision);
+        this.soundDamageTank = new Audio(mp3damageTank);
+        this.soundDeadTank = new Audio(mp3deadTank);
     }
 
     startRun(event) {
@@ -68,13 +105,13 @@ class App extends Component {
         if (['ArrowUp', 'ArrowDown', 'ArrowRight', 'ArrowLeft', 'Space'].includes(event.code)) {
             this.keys[event.code] = true;
         }
-    }    
+    };
     stopRun(event) {
         event.preventDefault();
         if (['ArrowUp', 'ArrowDown', 'ArrowRight', 'ArrowLeft', 'Space'].includes(event.code)) {
             this.keys[event.code] = false;
         }
-    }
+    };
 
     moveTank() {
         if (this.keys.ArrowUp || this.keys.ArrowDown || this.keys.ArrowLeft || this.keys.ArrowRight) {
@@ -137,7 +174,7 @@ class App extends Component {
                 this.setState({ shot: shot.concat(enemyShot) });
             };
         }
-    };
+    };     
 
     damageEnemy() {
         const shot = this.state.shot.concat();
@@ -149,6 +186,7 @@ class App extends Component {
                     shot.splice(iShot, 1);
                     enemy.splice(iEnemy, 1);
                     dead = true;
+                    this.counter++;
                     this.soundDeadEnemy.currentTime = 0;
                     this.soundDeadEnemy.play();
                     setTimeout(() => this.soundDeadEnemy.pause(), 300);
@@ -164,8 +202,12 @@ class App extends Component {
         const enemy = this.state.enemy.concat();
         for (let iEnemy = 0; iEnemy < enemy.length ; iEnemy++) {
             if (impact(enemy[iEnemy], tank, this.gameArena)) {
+                this.soundСollision.currentTime = 0;
+                this.soundСollision.play();
+                setTimeout(() => this.soundСollision.pause(), 800);
                 enemy.splice(iEnemy, 1);
                 this.life--;
+                this.counter++;
                 this.setState({ enemy: enemy });
                 break;
             }
@@ -178,9 +220,14 @@ class App extends Component {
                 for (let iEnemies = iEnemy + 1; iEnemies < enemies.length ; iEnemies++) {
                     if (enemies[iEnemies]) {
                         if (impact(enemies[iEnemy], enemies[iEnemies], this.gameArena)) {
+                            this.soundСollision.currentTime = 0;
+                            this.soundСollision.play();
+                            setTimeout(() => this.soundСollision.pause(), 800);
                             enemies[iEnemy] = null;
                             enemies[iEnemies] = null;
                             dead = true;
+                            this.counter++;
+                            this.counter++;
                             break;
                         }
                     }
@@ -213,12 +260,9 @@ class App extends Component {
             if (impact(this.state.positionTank, shot[iShot], this.gameArena, 'tank', 'shot')) {
                 shot.splice(iShot, 1);
                 this.life--;
-
-                //Другой звук
-                this.soundDeadEnemy.currentTime = 0;
-                this.soundDeadEnemy.play();
-                setTimeout(() => this.soundDeadEnemy.pause(), 300);
-                
+                this.soundDamageTank.currentTime = 0;
+                this.soundDamageTank.play();
+                setTimeout(() => this.soundDamageTank.pause(), 300);
                 this.setState({ shot: shot });
                 break;
             }
@@ -227,49 +271,112 @@ class App extends Component {
 
 
     startGame() {
-        this.moveTank();
-        this.moveEnemy();
-        this.moveShot();
-        this.damageEnemy();
-        this.damageСollision();
-        this.damageTank()
-        if (this.life) {
-            requestAnimationFrame(this.startGame);
-        } else {
-            this.soundTank.pause();
-            this.soundShot.pause();
-            this.soundDeadEnemy.pause();
+        if (!this.pause) {
+            this.moveTank();
+            this.moveEnemy();
+            this.moveShot();
+            this.damageEnemy();
+            this.damageСollision();
+            this.damageTank();
 
-            //запустить звук взрыва
-        };
+            if (this.life > 0) {
+                requestAnimationFrame(this.startGame);
+            } else {
+                this.soundTank.pause();
+                this.soundShot.pause();
+                this.soundDeadEnemy.pause();
+                this.soundСollision.pause();
+                this.soundDamageTank.pause();
+                this.soundDeadTank.play();
+                setTimeout(() => this.soundDeadTank.pause(), 2000);
+                this.renderBtnStart = true;
+                this.renderBtnMenu = true;
+                this.renderBtnPause = false;
+
+                this.setState({ start: false });
+
+                // this.setState({ shot: [], enemy: [] });
+
+            };
+        };        
     }
 
-    render() {      
-        //console.log('render');
+    
 
-        const shots = this.state.shot.map(item => (
-            <Shot position={item} key={item.id}/>
-        ));
+    playGame() {
+        this.setState({ start: true, shot: [], enemy: [] });
+        this.counter = 0;
+        this.life = 4;
+        this.timeShotTank = true;
+        this.timeShotEnemy = true;
+        this.timeEnemy = false;
+        this.speedTimeEnemy = 3000;
+        this.renderTank = true;
+        this.renderBtnStart = false;
+        this.renderBtnMenu = false;
+        this.renderBtnPause = true;
+        if (this.state.start) {
+            this.startGame();
+            setTimeout(() => this.timeEnemy = true, this.speedTimeEnemy);
+            this.soundGame.currentTime = 0;
+            this.soundGame.play();
+            setTimeout(() => this.soundGame.pause(), 6000);
+        } else {
+            requestAnimationFrame(this.playGame);
+        }
+    }
 
-        const enemies = this.state.enemy.map(item => (
-            <Enemy position={item} key={item.id}/>
-        ));
+    render() {
+        console.log(this.menuModal)
+        const btn = {
+            start: this.renderBtnStart,
+            menu: this.renderBtnMenu,
+            pause: this.renderBtnPause,
+        }
+        const fu = {
+            playGameFu: this.playGame,
+            pauseGameFu: () => { 
+                this.pause = !this.pause;
+                this.setState({ pause: this.pause });
+                if (!this.pause) this.startGame();
+            },
+            menuGameFu: () => {
+                this.menuModal = !this.menuModal;
+                this.setState({ menuModal: this.menuModal });
+            },
+        }
+
 
         return (
             <React.Fragment>
-                <Tank position={this.state.positionTank}/>
-                { shots }
-                { enemies }
+                <Header hp={this.life} counter={this.counter} function={fu} btn={btn}/>
+                <div className={'arena'} >
+                    { !this.life ? <GameOver position={randomGameOver(this.state.positionTank, this.gameArena)}>GAME OVER</GameOver> : null }
+                    { this.pause ? <GameOver position={randomGameOver(this.state.positionTank, this.gameArena)}>PAUSE</GameOver> : null }
+                    { this.renderTank ? <Tank position={this.state.positionTank} life={this.life} key={this.state.positionTank.id}/> : null }
+                    { this.state.shot.map(item => ( <Shot position={item} key={item.id}/> )) }
+                    { this.state.enemy.map(item => ( <Enemy position={item} key={item.id}/> )) }                    
+                </div>
+                <Footer/>
+                { this.menuModal ? <Settings menuGameFu={fu.menuGameFu} /> : null}
             </React.Fragment>
         )
     }
 
     componentDidMount() {
+        this.gameArena = document.querySelector('.arena').getBoundingClientRect();
         document.addEventListener('keydown',this.startRun);
         document.addEventListener('keyup', this.stopRun);
-        this.gameArena = document.body.getBoundingClientRect();
-        this.startGame();
-        setTimeout(() => this.timeEnemy = true, this.speedTimeEnemy);
+    }
+
+    // Это только если изменять размер окна браузера в процессе игры иначе - удали
+    componentDidUpdate() {
+        this.gameArena = document.querySelector('.arena').getBoundingClientRect();
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('keydown',this.startRun);
+        document.removeEventListener('keyup', this.stopRun);
     }
 }
 

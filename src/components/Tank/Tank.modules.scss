@@ -4,3 +4,10 @@
     height: 5vw;
     background: transparent url('./assets/player.png') center / contain no-repeat;
 }
+
+.Dead {
+    position: absolute;
+    width: 5vw;
+    height: 5vw;
+    background:transparent url('./assets/playerDead.png') center / contain no-repeat;
+}

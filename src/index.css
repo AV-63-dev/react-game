@@ -44,10 +44,22 @@ table {
 
 /* game style */
 
+* {
+    box-sizing: border-box;
+}
+
+html {
+    user-select: none;
+    font-size: 1vw;
+    font-weight: 800;
+    font-style: normal;
+    font-family: "Times New Roman", sans-serif;
+    line-height: 1.35;
+}
+
 #root {
-    position: relative;
+	position: relative;
     height: 100vh;
     width: 100vw;
 	overflow: hidden;
-    background: rgb(151, 192, 18);
 }

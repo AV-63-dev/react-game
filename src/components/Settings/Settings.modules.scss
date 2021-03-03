@@ -1,0 +1,45 @@
+.bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba($color: #113e92, $alpha: 0.7);
+}
+
+.modal {
+    position: fixed;
+    top: 50vh;
+    left: 50vw;
+    width: 70vw;
+    height: 65vh;
+    border-radius: 5vw;
+    overflow: hidden;
+    transform: translate(-50%, -50%);
+    background: #17021b;
+    display: flex;
+    flex-direction: column;
+    padding: 2vw;
+
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.btn {
+    background: white;
+    border: 5px solid #ffc55b;
+    border-radius: 10px;    
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    font-size: 2vw;
+    font-weight: 800;
+    font-style: normal;
+    font-family: "Times New Roman", sans-serif;
+    line-height: 1.35;
+    margin-left: 10px;
+}
+.btn:hover {
+    background: linear-gradient(to bottom, #ffd78e, #ffc55b);
+    border-color: white;
+}

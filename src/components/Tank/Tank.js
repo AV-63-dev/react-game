@@ -23,9 +23,11 @@ const Tank = props => {
         top: top,
         transform: rotate,
     };
+
+    const className = props.life ? s.Tank : s.Dead;
     
     return (
-        <div className={s.Tank} style={position}></div>
+        <div className={className} style={position}></div>
     )
 }
 

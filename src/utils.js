@@ -243,3 +243,14 @@ export const startPositionShellEnemies = (positionTank, positionEnemy, arena) =>
     };
     return positionNew;
 };
+
+export const randomGameOver = (positionTank, arena) => {
+    let top;
+    top = positionTank.top - 0.01 * arena.width - random(0.05 * arena.width);
+    if (top < 0.03 * arena.width) top = 0.03 * arena.width;
+    if (top + 0.13 * arena.width > arena.height) top = arena.height - 0.13 * arena.width;
+    return {
+        left: random(0.3 * arena.width, 0.1 * arena.width),
+        top: top,
+    };
+}
