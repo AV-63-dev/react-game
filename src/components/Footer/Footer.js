@@ -18,7 +18,7 @@ const Footer = () => (
             <a href="https://community-z.com/events/react-rsschool-2021/" target="_blank">
                 <img src={rs} alt="rs school" />
             </a>
-            <a href="#" target="_blank">
+            <a href="https://youtu.be/UReieYsaD8A" target="_blank">
                 <img src={yt} alt="you tube" />
             </a>
         </div>
